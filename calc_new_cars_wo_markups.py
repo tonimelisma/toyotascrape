@@ -36,7 +36,7 @@ df_prev['vin'] = df_prev['vin'].astype(str)
 # Find new cars (those that are in the latest df but not in the previous one)
 new_cars = df_latest[~df_latest['vin'].isin(df_prev['vin'])]
 
-# Further filter for cars with a markup smaller than 100 and "isPreSold" is False
+# Further filter for cars with a markup smaller than 500
 new_cars = new_cars[(new_cars['markup'] < 500)]
 
 new_cars.to_parquet(parquet_file_path)
