@@ -142,24 +142,25 @@ query {{
         }
 
         res = requests.post(url=url, json={"query": query}, headers=headers)
-        print("page ", page_no, ", status: ", res.status_code, " ", res.reason)
+        # print("page ", page_no, ", status: ", res.status_code, " ", res.reason)
         if res.status_code != 200:
             print("error: [", res.status_code, "] ", res.reason)
             exit(1)
 
         data = res.json()
 
-        vehicles.append(data['data']['locateVehiclesByZip']['vehicleSummary'])
+        vehicles += data['data']['locateVehiclesByZip']['vehicleSummary']
 
         page_no = data['data']['locateVehiclesByZip']['pagination']['pageNo']
         total_pages = data['data']['locateVehiclesByZip']['pagination']['totalPages']
 
         if page_no >= total_pages:
             has_more_pages = False
-            print("no more pages")
+            # print("no more pages")
         else:
             page_no += 1
-            wait()
+
+        wait()
     return vehicles
 
 

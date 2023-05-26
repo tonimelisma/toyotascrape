@@ -3,15 +3,30 @@
 import pandas as pd
 import os
 from glob import glob
+import re
 
 base_dir = "/var/www/html/toyota"
 parquet_file_name = "dealer_markups.parquet"
-parquet_file_path = os.path.join(base_dir, parquet_file_name)
 excel_file_name = "dealer_markups.xlsx"
-excel_file_path = os.path.join(base_dir, excel_file_name)
 
-# Get a list of all the Parquet files, sorted by date
-filepaths = sorted(glob(base_dir + "/*/*.parquet"),
+# Change 1: Add a regular expression to match directories and files of format 'YYYY-MM-DD'
+regex = re.compile(r'\d{4}-\d{2}-\d{2}')
+
+# Get a list of all the Parquet files in YYYY-MM-DD directories, sorted by date
+filepaths = sorted([fp for fp in glob(base_dir + "/*/*.parquet")
+                    if regex.fullmatch(fp.split('/')[-2]) and regex.fullmatch(fp.split('/')[-1].split('.')[0])],
+                   key=os.path.getmtime, reverse=True)
+
+# Get the directory path of the latest file for saving output files
+latest_dir = os.path.dirname(filepaths[0])
+# Change 2: save the output to the latest directory
+parquet_file_path = os.path.join(latest_dir, parquet_file_name)
+# Change 2: save the output to the latest directory
+excel_file_path = os.path.join(latest_dir, excel_file_name)
+
+# Get a list of all the Parquet files in YYYY-MM-DD directories, sorted by date
+filepaths = sorted([fp for fp in glob(base_dir + "/*/????-??-??.parquet")
+                    if regex.fullmatch(fp.split('/')[-2]) and regex.fullmatch(fp.split('/')[-1].split('.')[0])],
                    key=os.path.getmtime, reverse=True)
 
 # Empty DataFrame to store results
@@ -26,9 +41,7 @@ for filepath in filepaths:
     df = pd.read_parquet(filepath, engine='pyarrow')
 
     # Filter rows where 'price.advertizedPrice' and 'price.totalMsrp' are not null
-    df = df[df['price.advertizedPrice'].notnull() & df['price.totalMsrp'].notnull()]
-
-    df['markup'] = df['price.advertizedPrice']-df['price.totalMsrp']
+    df = df[df['markup'].notnull()]
 
     # Group by dealership and take the top 10 cars based on 'markup'
     for dealership, group in df.groupby('dealerMarketingName'):

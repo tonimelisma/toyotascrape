@@ -1,0 +1,5 @@
+Dealer categories:
+- A - Allocated
+- F - In Transit (between port and dealer?)
+- GT - On Truck to Dealer
+- G - Ground (at dealership?)

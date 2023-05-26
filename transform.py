@@ -34,6 +34,7 @@ for dir_path, dir_names, file_names in os.walk(base_dir):
                 # Drop the 'media' and 'distance' columns
                 df = df.drop(columns=['media', 'distance', 'family'])
 
+                # Normalize the data
                 df = pd.json_normalize(df.to_dict(
                     orient='records'), max_level=False)
 
@@ -64,6 +65,10 @@ for dir_path, dir_names, file_names in os.walk(base_dir):
                 # Drop the original nested columns
                 df = df.drop(columns=["transmission", "price", "mpg", "model", "intColor", "extColor", "eta",
                              "engine", "drivetrain", "intColor.colorFamilies", "extColor.colorFamilies"])
+
+                # Calculate markup column
+                df['markup'] = df['price.advertizedPrice'] - \
+                    df['price.totalMsrp']
 
                 # Old code to check for unnested data structures
                 # dict_columns = [col for col in df.columns if df[col].apply(
