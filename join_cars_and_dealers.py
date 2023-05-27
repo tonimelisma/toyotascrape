@@ -3,6 +3,7 @@ import pandas as pd
 import re
 from pathlib import Path
 import pyarrow.parquet as pq
+from openpyxl import Workbook
 
 # regex for date pattern in the directory name
 date_pattern = re.compile(r'\d{4}-\d{2}-\d{2}')
@@ -22,6 +23,8 @@ for subdir in base_dir.iterdir():
         only_cars_file = subdir / f'{subdir.name}_only_cars.parquet'
         cars_with_dealers_file = subdir / \
             f'{subdir.name}_cars_with_dealers.parquet'
+        cars_with_dealers_excel = subdir / \
+            f'{subdir.name}_cars_with_dealers.xlsx'
 
         # check if the input file exists and the output file doesn't
         if only_cars_file.is_file() and not cars_with_dealers_file.is_file():
@@ -38,3 +41,6 @@ for subdir in base_dir.iterdir():
 
             # write the merged data back into a parquet file
             merged_df.to_parquet(cars_with_dealers_file, engine='pyarrow')
+
+            merged_df.to_excel(cars_with_dealers_excel,
+                               engine='openpyxl', index=False)

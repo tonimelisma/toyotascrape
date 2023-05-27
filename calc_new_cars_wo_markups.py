@@ -5,8 +5,6 @@ import os
 import re
 
 base_dir = "/var/www/html/toyota"
-parquet_file_name = "new_cars_wo_markups.parquet"
-excel_file_name = "new_cars_wo_markups.xlsx"
 
 # Get the list of all directories in the path, sorted in reverse order
 dirs = [d for d in os.listdir(base_dir) if os.path.isdir(
@@ -19,10 +17,18 @@ dirs = [d for d in dirs if re.match(r'\d{4}-\d{2}-\d{2}', d) is not None]
 dirs.sort(reverse=True)
 
 # Load the two most recent files
-file1_path = os.path.join(base_dir, dirs[0], f'{dirs[0]}.parquet')
-file2_path = os.path.join(base_dir, dirs[1], f'{dirs[1]}.parquet')
+file1_path = os.path.join(
+    base_dir, dirs[0], f'{dirs[0]}_cars_with_dealers.parquet')
+file2_path = os.path.join(
+    base_dir, dirs[1], f'{dirs[1]}_cars_with_dealers.parquet')
 
-# Set output file paths
+# Extract date from the latest directory name
+latest_date = dirs[0]
+
+# Change: Prepend the date to output file names
+parquet_file_name = f"{latest_date}_new_cars_wo_markups.parquet"
+excel_file_name = f"{latest_date}_new_cars_wo_markups.xlsx"
+
 parquet_file_path = os.path.join(base_dir, dirs[0], parquet_file_name)
 excel_file_path = os.path.join(base_dir, dirs[0], excel_file_name)
 

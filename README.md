@@ -12,3 +12,7 @@ Pipeline
 - Transform cars with dealers
 - Calculate dealer markups
 - Calculate new cars w/o markups
+
+TODO
+
+- Do calculations to old daily directories idempotently

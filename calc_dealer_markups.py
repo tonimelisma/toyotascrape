@@ -6,19 +6,24 @@ from glob import glob
 import re
 
 base_dir = "/var/www/html/toyota"
-parquet_file_name = "dealer_markups.parquet"
-excel_file_name = "dealer_markups.xlsx"
 
-# Change 1: Add a regular expression to match directories and files of format 'YYYY-MM-DD'
-regex = re.compile(r'\d{4}-\d{2}-\d{2}')
+# Change 1: Add a regular expression to match directories and files of format 'YYYY-MM-DD_cars_with_dealers'
+regex = re.compile(r'\d{4}-\d{2}-\d{2}_cars_with_dealers')
 
 # Get a list of all the Parquet files in YYYY-MM-DD directories, sorted by date
-filepaths = sorted([fp for fp in glob(base_dir + "/*/*.parquet")
-                    if regex.fullmatch(fp.split('/')[-2]) and regex.fullmatch(fp.split('/')[-1].split('.')[0])],
+filepaths = sorted([fp for fp in glob(base_dir + "/*/*_cars_with_dealers.parquet")
+                    if regex.fullmatch(fp.split('/')[-1].split('.')[0])],
                    key=os.path.getmtime, reverse=True)
 
 # Get the directory path of the latest file for saving output files
 latest_dir = os.path.dirname(filepaths[0])
+# Extract date from the latest directory name
+latest_date = os.path.basename(latest_dir)
+
+# Change 2: Prepend the date to output file names
+parquet_file_name = f"{latest_date}_dealer_markups.parquet"
+excel_file_name = f"{latest_date}_dealer_markups.xlsx"
+
 parquet_file_path = os.path.join(latest_dir, parquet_file_name)
 excel_file_path = os.path.join(latest_dir, excel_file_name)
 
