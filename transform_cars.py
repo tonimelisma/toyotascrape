@@ -3,17 +3,26 @@
 import os
 import pandas as pd
 from pathlib import Path
+from datetime import datetime
 
 base_dir = "/var/www/html/toyota"
 
 
 # Loop over all directories in base_dir
 for dir_path, dir_names, file_names in os.walk(base_dir):
+    dir_name = dir_path.split("/")[-1]
+
+    try:
+        datetime.strptime(dir_name, '%Y-%m-%d')
+    except ValueError:
+        # If it can't be parsed into a date, skip this directory <-- NEW
+        continue
+
     # The Parquet file name will be derived from directory name (which represents date)
-    parquet_file_name = dir_path.split("/")[-1] + "_only_cars.parquet"
+    parquet_file_name = dir_name + "_only_cars.parquet"
     parquet_file_path = os.path.join(dir_path, parquet_file_name)
 
-    csv_file_name = dir_path.split("/")[-1] + "_only_cars.xlsx"
+    csv_file_name = dir_name + "_only_cars.xlsx"
     csv_file_path = os.path.join(dir_path, csv_file_name)
 
     # If Parquet file does not exist, process the JSON files, else skip
@@ -27,7 +36,7 @@ for dir_path, dir_names, file_names in os.walk(base_dir):
             if file_name.endswith(".json"):
                 file_path = os.path.join(dir_path, file_name)
                 # Read the JSON file into a DataFrame and append it to the list
-                df = pd.read_json(file_path)
+                df = pd.read_json(file_path, dtype={'dealerCd': str})
 
                 ### TRANSFORMATIONS ###
 
