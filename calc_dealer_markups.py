@@ -19,15 +19,8 @@ filepaths = sorted([fp for fp in glob(base_dir + "/*/*.parquet")
 
 # Get the directory path of the latest file for saving output files
 latest_dir = os.path.dirname(filepaths[0])
-# Change 2: save the output to the latest directory
 parquet_file_path = os.path.join(latest_dir, parquet_file_name)
-# Change 2: save the output to the latest directory
 excel_file_path = os.path.join(latest_dir, excel_file_name)
-
-# Get a list of all the Parquet files in YYYY-MM-DD directories, sorted by date
-filepaths = sorted([fp for fp in glob(base_dir + "/*/????-??-??.parquet")
-                    if regex.fullmatch(fp.split('/')[-2]) and regex.fullmatch(fp.split('/')[-1].split('.')[0])],
-                   key=os.path.getmtime, reverse=True)
 
 # Empty DataFrame to store results
 result_df = pd.DataFrame()
@@ -40,7 +33,7 @@ for filepath in filepaths:
     # Read Parquet file into Pandas DataFrame
     df = pd.read_parquet(filepath, engine='pyarrow')
 
-    # Filter rows where 'price.advertizedPrice' and 'price.totalMsrp' are not null
+    # Filter rows where 'markup' is not null
     df = df[df['markup'].notnull()]
 
     # Group by dealership and take the top 10 cars based on 'markup'
@@ -51,7 +44,7 @@ for filepath in filepaths:
         add_rows = min(10 - dealership_counts[dealership], len(group))
         if add_rows > 0:
             result_df = pd.concat(
-                [result_df, group.nlargest(add_rows, 'markup')])  # type: ignore
+                [result_df, group.nlargest(add_rows, 'markup')])
 
             dealership_counts[dealership] += add_rows
 
@@ -66,6 +59,14 @@ final_df = pd.DataFrame()
 
 # Group 'result_df' by dealership and calculate required statistics
 grouped = result_df.groupby('dealerMarketingName')
+final_df['dealerCd'] = grouped['dealerCd'].first()
+final_df['dealerName'] = grouped['dealerName'].first()
+final_df['phoneNumber'] = grouped['phoneNumber'].first()
+final_df['webSite'] = grouped['webSite'].first()
+final_df['postalAddress'] = grouped['postalAddress'].first()
+final_df['cityName'] = grouped['cityName'].first()
+final_df['state'] = grouped['state'].first()
+final_df['zipCode'] = grouped['zipCode'].first()
 final_df['number_of_cars_with_markup'] = grouped.size()
 final_df['minimum_markup'] = grouped['markup'].min()
 final_df['average_markup'] = grouped['markup'].mean()
