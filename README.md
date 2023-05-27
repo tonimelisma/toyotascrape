@@ -4,6 +4,11 @@ Scrape current US Toyota inventory, showing unsold vehicles at different dealers
 
 Outputs Parquet and Excel
 
-## TODO
+Pipeline
 
-- Pagination for GraphQL query
+- Scrape cars
+- Transform cars
+- Scrape dealers
+- Transform cars with dealers
+- Calculate dealer markups
+- Calculate new cars w/o markups

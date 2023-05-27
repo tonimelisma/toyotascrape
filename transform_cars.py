@@ -10,10 +10,10 @@ base_dir = "/var/www/html/toyota"
 # Loop over all directories in base_dir
 for dir_path, dir_names, file_names in os.walk(base_dir):
     # The Parquet file name will be derived from directory name (which represents date)
-    parquet_file_name = dir_path.split("/")[-1] + ".parquet"
+    parquet_file_name = dir_path.split("/")[-1] + "_only_cars.parquet"
     parquet_file_path = os.path.join(dir_path, parquet_file_name)
 
-    csv_file_name = dir_path.split("/")[-1] + ".xlsx"
+    csv_file_name = dir_path.split("/")[-1] + "_only_cars.xlsx"
     csv_file_path = os.path.join(dir_path, csv_file_name)
 
     # If Parquet file does not exist, process the JSON files, else skip
