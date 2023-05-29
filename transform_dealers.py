@@ -34,7 +34,7 @@ for json_file in json_files:
     if dealer_cd in existing_dealerCd:
         continue
 
-    print("Adding dealer", dealer_cd)
+    # print("Adding dealer", dealer_cd)
 
     with open(os.path.join(dealers_dir, json_file), 'r') as f:
         dealer_data = json.load(f)

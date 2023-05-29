@@ -48,7 +48,7 @@ for dirpath in dirpaths:
 
             # If the dealer file does not exist, fetch it
             if not os.path.exists(dealer_file):
-                print("Fetching ", dealer_cd)
+                # print("Fetching ", dealer_cd)
                 response = requests.get(
                     f"https://api.dg.toyota.com/api/v2/dealers/{dealer_cd}?brand=toyota", headers=headers)
 
